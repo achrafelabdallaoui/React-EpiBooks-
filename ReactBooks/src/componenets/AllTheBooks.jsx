@@ -1,17 +1,35 @@
-import { Button,Card } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import FantasyBooks from "../../json/fantasy.json"
 import HistoryBooks from "../../json/history.json"
 import HorrorBooks from "../../json/horror.json"
 import RomanceBooks from "../../json/romance.json"
 import ScifiBooks from "../../json/scifi.json"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ButtonChange from "./ButtonChange";
-function AllTheBooks(){
-    const [Cards,setCards]= useState([])
+import SingleCard from "./SinglrCard";
+const AllTheBooks = () =>{
+    const [Cards,setCards]= useState([]);
+    const [CardsFiltred,setCardsFiltred]= useState([]);
+
+    const handelSearch = (event)=>{
+        let value = new RegExp(event.target.value, 'i')
+        const actualState = Cards
+        const result = actualState.filter((book)=>{
+            return value.test(book.title)
+        })
+        setCardsFiltred(result)
+    }
+useEffect(()=>{
+    setCardsFiltred(Cards)
+},[Cards])
+
+
 return(
     <>
-    <ButtonChange setCards={setCards}/>
-    
+    <input type="text" onChange={handelSearch}/>
+    <div className="text-center my-4">
+    <ButtonChange setCards={setCards} />
+    </div>
     <div className="text-center my-4">
         <Button variant="outline-success" onClick={()=>setCards(FantasyBooks)}>Fantasy</Button>
         <Button variant="outline-success" onClick={()=>setCards(HistoryBooks)}>History</Button>
@@ -20,17 +38,8 @@ return(
         <Button variant="outline-success" onClick={()=>setCards(ScifiBooks)}>Scifi</Button>
         </div>
     <div className="d-flex flex-wrap justify-content-between">
-    {Cards.map((book)=>
-    <Card style={{ width: '18rem' }} key={book.asin}>
-    <Card.Img variant="top" src={book.img} />
-    <Card.Body>
-      <Card.Title>{book.title}</Card.Title>
-      <Card.Text>
-        
-      </Card.Text>
-      <Button variant="primary">combra</Button>
-    </Card.Body>
-  </Card>
+    {CardsFiltred.map((book)=>
+    <SingleCard book={book} key={book.asin}/>
   )
   }
   </div>
